@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class AddressController {
 
     private final AddressService addressService;
-  //  private final WebCleintClass webClient;
 
     @GetMapping("/address/{id}")
     public ResponseEntity<Address> getAddressById(@PathVariable Integer id) {

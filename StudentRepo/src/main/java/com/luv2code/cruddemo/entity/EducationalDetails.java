@@ -22,7 +22,7 @@ public class EducationalDetails {
     private int id;
     private String degree;
     private double degreePercentage;
-    private String intemediateCollege;
+    private String intermediateCollege;
     private double intermediatePercentage;
     private String sscSchool;
     private double sscPercentage;

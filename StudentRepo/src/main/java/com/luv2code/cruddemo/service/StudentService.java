@@ -2,6 +2,7 @@ package com.luv2code.cruddemo.service;
 
 import com.luv2code.cruddemo.dao.StudentDao;
 import com.luv2code.cruddemo.dao.StudentResponse;
+import com.luv2code.cruddemo.dao.StudentResponses;
 import com.luv2code.cruddemo.entity.Address;
 import com.luv2code.cruddemo.entity.EducationalDetails;
 import com.luv2code.cruddemo.entity.FamilyDetails;
@@ -13,14 +14,10 @@ import com.luv2code.cruddemo.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import model.StudentDaoResponse;
-import org.hibernate.boot.cfgxml.internal.CfgXmlAccessServiceImpl;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple3;
 
-import javax.management.RuntimeMBeanException;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -32,21 +29,27 @@ public class StudentService {
     private final StudentMapper studentMapper;
     private final Gateway gateway;
 
+    public Mono<List<StudentResponses>> getStudents() {
 
-    public List<Student> getStudents() {
         var students = studentRepository.findAll();
-        // List<Address> addresses = addressRepository.findByIds
 
-        List<Student> resultList = students.stream().filter(Objects::nonNull).sorted(Comparator.comparing(Student::getFirstName).thenComparing(Student::getLastName)).distinct().toList();
+        if(students.isEmpty()){
+            throw new RuntimeException("Student Details are not found ");
+        }
 
-        return resultList;
+       return Mono.just(students.stream().
+                filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Student::getFirstName)
+                        .thenComparing(Student::getLastName))
+               .map(studentMapper::mapToStudentResponse)
+                .distinct().
+                toList());
     }
 
     public Student getStudentsById(Integer id) {
-        Student students = studentRepository.findById(id).orElseThrow(() -> {
-            throw new RuntimeException("Student not found");
-        });
-        return students;
+
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
     public Student editStudentDetails(StudentDao studentDao) {
@@ -83,7 +86,7 @@ public class StudentService {
 
         var addreess = addressRepository.findById(id);
 
-        if (!addreess.isPresent()) {
+        if (addreess.isEmpty()) {
             throw new RuntimeException("Address not found");
         }
         var address = addreess.get();
@@ -96,9 +99,7 @@ public class StudentService {
             getStudent = this.getStudentsById(id);
         }
 
-        var studentResponse = StudentResponse.builder().student(getStudent).address(address).build();
-
-        return studentResponse;
+        return StudentResponse.builder().student(getStudent).address(address).build();
     }
 
     public Mono<StudentDaoResponse> getStudentsWithAddress(Integer id) {

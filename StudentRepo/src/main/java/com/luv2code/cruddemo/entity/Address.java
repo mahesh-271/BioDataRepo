@@ -24,8 +24,8 @@ public class Address {
     private String mandal;
     @Column(name = "state")
     private String state;
-    @Column(name = "pincode")
-    private int pincode;
+    @Column(name = "pin_code")
+    private int pinCode;
 
 }
 

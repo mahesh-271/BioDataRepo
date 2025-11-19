@@ -14,8 +14,6 @@ public class AddressService {
 
     private final AddressRepository addressRepository;
 
-
-
     public Address getAddressById(Integer id) {
 
         var addreess = addressRepository.findById(id).orElseThrow(

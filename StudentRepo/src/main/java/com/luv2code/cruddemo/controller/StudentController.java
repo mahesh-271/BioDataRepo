@@ -1,6 +1,7 @@
 package com.luv2code.cruddemo.controller;
 
 import com.luv2code.cruddemo.dao.StudentDao;
+import com.luv2code.cruddemo.dao.StudentResponses;
 import com.luv2code.cruddemo.entity.Student;
 import com.luv2code.cruddemo.service.StudentService;
 import com.luv2code.cruddemo.webclient.WebCleintClass;
@@ -23,7 +24,7 @@ public class StudentController {
     private final WebCleintClass webClient;
 
     @GetMapping("/getStudents")
-    public ResponseEntity<List<Student>> getStudent() {
+    public ResponseEntity<Mono<List<StudentResponses>>> getStudent() {
 
         return ResponseEntity.ok(studentService.getStudents());
     }
